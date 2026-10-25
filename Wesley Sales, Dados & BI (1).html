@@ -1,0 +1,519 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Wesley Sales, Dados & BI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: o currículo é uma "consulta SQL". Hero com o editor rodando a query, depois
+   a carreira vira um gráfico de Gantt clicável (2016 a 2026) e o resto são "tabelas". */
+:root {
+  --bg: #edf0f5;
+  --surface: #ffffff;
+  --ink: #151a24;
+  --muted: #566074;
+  --line: #d3d9e3;
+  --hi: #ffd84d;
+  --hi-ink: #151a24;
+  --data: #0f8b7d;
+  --on-data: #ffffff;
+  --code-bg: #131822;
+  --code-fg: #e8ecf3;
+  --code-key: #ffd84d;
+  --code-str: #7fe0c8;
+  --code-com: #8b95aa;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1219; --surface: #171e29; --ink: #e8ecf3; --muted: #9aa4b7; --line: #2a3342;
+    --data: #3ccbb8; --on-data: #06201c; --code-bg: #080b10;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1219; --surface: #171e29; --ink: #e8ecf3; --muted: #9aa4b7; --line: #2a3342;
+  --data: #3ccbb8; --on-data: #06201c; --code-bg: #080b10;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin-inline: auto; display: flex; flex-direction: column; gap: 72px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--hi); outline-offset: 3px; border-radius: 4px; }
+.u { text-decoration: underline; text-decoration-color: var(--hi); text-decoration-thickness: 0.16em; text-underline-offset: 0.12em; text-decoration-skip-ink: none; }
+
+.eyebrow { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 10px; }
+h2 { font-size: clamp(1.9rem, 4.4vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+.sec-head { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+.sec-head p { color: var(--muted); max-width: 60ch; }
+
+/* ---------- Hero ---------- */
+.hero { display: grid; gap: 28px; }
+.hero h1 { font-size: clamp(2.5rem, 8vw, 5.4rem); font-weight: 800; letter-spacing: -0.03em; }
+.hero .lead { font-size: clamp(1.05rem, 2vw, 1.25rem); max-width: 56ch; color: var(--muted); }
+.hero .lead b { color: var(--ink); font-weight: 600; }
+
+.editor { background: var(--code-bg); color: var(--code-fg); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 40px -22px rgba(10, 15, 25, 0.55); }
+.editor-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.09); font-family: var(--font-mono); font-size: 12.5px; color: var(--code-com); }
+.editor-bar .dots { display: inline-flex; gap: 6px; margin-right: 10px; vertical-align: middle; }
+.editor-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.18); display: block; }
+.run { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; background: var(--hi); color: var(--hi-ink); border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.run:hover { filter: brightness(1.06); }
+pre.q { margin: 0; padding: 18px 18px 20px; font-family: var(--font-mono); font-size: clamp(13px, 2.6vw, 16px); line-height: 1.75; overflow-x: auto; min-height: 9.4em; }
+.k { color: var(--code-key); font-weight: 500; }
+.s { color: var(--code-str); }
+.c { color: var(--code-com); }
+.caret { display: inline-block; width: 0.6em; height: 1.1em; background: var(--code-key); vertical-align: text-bottom; animation: blink 1.1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.result { border-top: 1px solid rgba(255,255,255,0.09); padding: 14px 18px 16px; }
+.result.is-hidden { visibility: hidden; }
+.tbl-scroll { overflow-x: auto; }
+.result table { border-collapse: collapse; width: 100%; font-family: var(--font-mono); font-size: 14px; min-width: 460px; }
+.result th { text-align: left; font-weight: 500; color: var(--code-com); padding: 4px 18px 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.16); }
+.result td { padding: 10px 18px 4px 0; white-space: nowrap; }
+.result td:first-child { color: var(--code-key); font-weight: 600; }
+.result .status { margin-top: 10px; font-family: var(--font-mono); font-size: 12px; color: var(--code-com); }
+
+.contacts { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; }
+.chip-link, .copy { font-family: var(--font-mono); font-size: 13.5px; text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; color: var(--ink); display: inline-flex; gap: 8px; align-items: center; cursor: pointer; }
+.chip-link:hover, .copy:hover { border-color: var(--ink); }
+.copy { font-family: var(--font-body); font-size: 13px; font-weight: 600; background: var(--hi); border-color: var(--hi); color: var(--hi-ink); }
+.copy:hover { border-color: var(--hi-ink); }
+
+/* ---------- KPIs ---------- */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.kpi .n { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.4rem, 5vw, 3.3rem); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.kpi .l { color: var(--muted); font-size: 15px; }
+.kpi .tag { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- Formação em destaque ---------- */
+:root { --hi-ink-2: #3d3f26; --hi-track: #e6bd1f; }
+.pill { display: inline-flex; align-items: center; gap: 10px; align-self: start; width: fit-content; max-width: 100%; background: var(--hi); color: var(--hi-ink); font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-decoration: none; border-radius: 999px; padding: 7px 16px; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hi-ink); flex: none; animation: blink 1.6s steps(2) infinite; }
+.pill:hover { filter: brightness(1.05); }
+#formacao { scroll-margin-top: 24px; }
+.edu { background: var(--hi); color: var(--hi-ink); border-radius: 20px; padding: clamp(22px, 5vw, 48px); display: grid; gap: 36px; }
+.edu .eyebrow { color: var(--hi-ink-2); }
+.edu h2 { font-size: clamp(2rem, 5.4vw, 3.6rem); }
+.edu-intro { display: grid; gap: 14px; max-width: 60ch; }
+.edu-intro p { color: var(--hi-ink-2); font-size: 1.05rem; }
+.edu-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 28px 40px; align-items: start; }
+.facts { margin: 0; display: grid; gap: 0; }
+.facts > div { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 12px; padding: 11px 0; border-top: 1.5px solid var(--hi-ink); }
+.facts > div:last-child { border-bottom: 1.5px solid var(--hi-ink); }
+.facts dt { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--hi-ink-2); padding-top: 3px; }
+.facts dd { margin: 0; font-weight: 600; font-size: 1.05rem; }
+.facts dd small { display: block; font-weight: 400; font-size: 0.85rem; color: var(--hi-ink-2); }
+.prog { display: grid; gap: 12px; }
+.prog .big { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.6rem, 6vw, 3.8rem); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.prog .big span { font-size: 0.45em; letter-spacing: -0.01em; font-weight: 700; }
+.prog p { color: var(--hi-ink-2); }
+.prog-track { position: relative; height: 16px; border-radius: 999px; background: var(--hi-track); overflow: hidden; }
+.prog-fill { position: absolute; inset: 0 auto 0 0; width: var(--p, 15%); background: var(--hi-ink); border-radius: 999px; }
+.prog-ends { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--hi-ink-2); }
+.areas-h { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--hi-ink-2); margin-bottom: 16px; }
+.areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px 28px; }
+.area { border-top: 3px solid var(--hi-ink); padding-top: 12px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.area h3 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+.area p { color: var(--hi-ink-2); font-size: 0.97rem; line-height: 1.5; }
+.edu-note { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.15rem, 2.4vw, 1.45rem); line-height: 1.3; letter-spacing: -0.01em; max-width: 52ch; }
+
+/* ---------- Gantt ---------- */
+.gantt { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 8px 18px 14px; }
+.axis, .job > summary { display: grid; grid-template-columns: 250px minmax(0, 1fr) 24px; gap: 18px; align-items: center; }
+.axis { padding: 12px 0 8px; border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.axis .ticks { position: relative; height: 16px; }
+.axis .ticks span { position: absolute; top: 0; left: calc(var(--y) * 12 / 132 * 100%); }
+.job { border-bottom: 1px solid var(--line); }
+.job:last-of-type { border-bottom: 0; }
+.job > summary { list-style: none; cursor: pointer; padding: 14px 0; }
+.job > summary::-webkit-details-marker { display: none; }
+.who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.who b { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+.who .role { font-size: 13.5px; color: var(--muted); line-height: 1.35; }
+.who time { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.track { position: relative; height: 30px; border-radius: 6px; background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / 11 - 1px), var(--line) calc(100% / 11 - 1px), var(--line) calc(100% / 11)); }
+.bar { position: absolute; top: 3px; bottom: 3px; left: calc(var(--s) / 132 * 100%); width: calc((var(--e) - var(--s)) / 132 * 100%); border-radius: 5px; background: var(--data); color: var(--on-data); font-family: var(--font-mono); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; transition: transform 0.15s ease; }
+.job > summary:hover .bar { transform: scaleY(1.12); }
+.bar.now { background: var(--hi); color: var(--hi-ink); }
+.bar.study { background: repeating-linear-gradient(135deg, var(--data) 0 5px, transparent 5px 9px); border: 1.5px dashed var(--data); border-right: 0; border-radius: 5px 0 0 5px; width: calc((132 - var(--s)) / 132 * 100%); }
+.chev { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); position: relative; }
+.chev::before, .chev::after { content: ""; position: absolute; left: 6px; right: 6px; top: 50%; height: 1.5px; background: var(--ink); transition: transform 0.2s ease; }
+.chev::after { transform: rotate(90deg); }
+.job[open] .chev::after { transform: rotate(0deg); }
+.job .body { padding: 2px 0 20px; display: grid; gap: 14px; max-width: 70ch; }
+.job .plain { font-family: var(--font-display); font-weight: 500; font-size: 1.2rem; line-height: 1.3; letter-spacing: -0.01em; }
+.job ul { margin: 0; padding-left: 1.1em; display: grid; gap: 7px; color: var(--muted); }
+.job li::marker { color: var(--data); }
+.hint { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 12px; }
+
+/* ---------- Skills ---------- */
+.stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
+.grp { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.grp h3 { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chips span { font-size: 14px; font-weight: 500; border: 1px solid var(--line); border-radius: 8px; padding: 3px 10px; background: var(--bg); }
+.chips span.big { background: var(--hi); border-color: var(--hi); color: var(--hi-ink); font-weight: 600; }
+
+/* ---------- Diferenciais ---------- */
+.perks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px 32px; }
+.perk { display: flex; flex-direction: column; gap: 8px; min-width: 0; border-top: 3px solid var(--ink); padding-top: 14px; }
+.perk h3 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.015em; }
+.perk p { color: var(--muted); }
+
+/* ---------- Rodapé ---------- */
+.cta { background: var(--code-bg); color: var(--code-fg); border-radius: 18px; padding: clamp(24px, 5vw, 48px); display: grid; gap: 20px; border: 1px solid var(--line); }
+.cta h2 { font-size: clamp(2.2rem, 6vw, 4rem); }
+.cta p { color: var(--code-com); max-width: 50ch; }
+.cta .mail { font-family: var(--font-mono); font-size: clamp(14px, 3.4vw, 20px); overflow-wrap: anywhere; color: var(--code-key); }
+.cta .contacts .chip-link { background: transparent; color: var(--code-fg); border-color: rgba(255,255,255,0.22); }
+.cta .contacts .chip-link:hover { border-color: var(--code-fg); }
+.foot { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+@media (max-width: 720px) {
+  .wrap { gap: 56px; }
+  .axis { grid-template-columns: minmax(0, 1fr); }
+  .axis > span { display: none; }
+  .axis > i { display: none; }
+  .job > summary { grid-template-columns: minmax(0, 1fr) 24px; grid-template-areas: "who chev" "track track"; gap: 12px; }
+  .who { grid-area: who; }
+  .track { grid-area: track; }
+  .chev { grid-area: chev; }
+  .gantt { padding-inline: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+  .bar, .chev::after { transition: none; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">-- consulta número 1: quem é essa pessoa?</p>
+      <h1>Oi, eu sou o Wesley. Eu transformo <span class="u">montanha de dados</span> em decisão.</h1>
+    </div>
+    <p class="lead">Analista de Dados e BI com <b>7+ anos</b> em ambientes corporativos de alta complexidade, incluindo o planejamento das <b>Linhas 19 e 20 do Metrô de São Paulo</b>. Python, SQL e Power BI são as ferramentas. Fazer o dado fazer sentido para quem decide é o trabalho.</p>
+
+    <a class="pill" href="#formacao"><span class="dot" aria-hidden="true"></span>Cursando Data Science na FIAP · conclusão prevista jul/2028</a>
+
+    <div class="editor" aria-label="Consulta SQL que descreve o Wesley">
+      <div class="editor-bar">
+        <span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>wesley.sql</span>
+        <button class="run" id="run" type="button">▶ Executar</button>
+      </div>
+      <pre class="q" id="q" aria-live="polite"><span class="k">SELECT</span> nome, cargo, cidade
+  <span class="k">FROM</span> pessoas
+ <span class="k">WHERE</span> ama_dados = <span class="k">TRUE</span>
+   <span class="k">AND</span> anos_de_estrada &gt;= <span class="s">7</span>;<span class="caret" aria-hidden="true"></span></pre>
+      <div class="result" id="result">
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>nome</th><th>cargo</th><th>cidade</th></tr></thead>
+            <tbody><tr><td>Wesley Sales</td><td>Analista de Dados &amp; BI</td><td>São Paulo, SP</td></tr></tbody>
+          </table>
+        </div>
+        <p class="status">1 linha retornada. Pode apertar Executar de novo, eu não me canso.</p>
+      </div>
+    </div>
+
+    <div class="contacts">
+      <button class="copy" type="button" data-copy="souzasaleswes@gmail.com">Copiar e-mail</button>
+      <span class="chip-link" style="cursor:default">souzasaleswes@gmail.com</span>
+      <a class="chip-link" href="https://linkedin.com/in/datawes" target="_blank" rel="noopener">linkedin.com/in/datawes ↗</a>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-kpis">
+    <div class="sec-head">
+      <p class="eyebrow">/* painel: os números que eu levaria numa conversa */</p>
+      <h2 id="h-kpis">Resumo do painel</h2>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="tag">Estrada</span><span class="n">7+</span><span class="l">anos analisando dados em ambientes corporativos complexos.</span></div>
+      <div class="kpi"><span class="tag">Automação</span><span class="n">até 70%</span><span class="l">menos tempo em relatórios gerenciais, com Python (Pandas + OpenPyXL).</span></div>
+      <div class="kpi"><span class="tag">Obra grande</span><span class="n">L19 + L20</span><span class="l">Metrô de São Paulo, com investimento bilionário no planejamento.</span></div>
+    </div>
+  </section>
+
+  <section id="formacao" aria-labelledby="h-edu">
+    <div class="edu">
+      <div class="edu-intro">
+        <p class="eyebrow" style="margin:0">/* tabela: formacao · status = 'EM ANDAMENTO' */</p>
+        <h2 id="h-edu">Agora também estudando Data Science na FIAP</h2>
+        <p>Anos de prática com dados, agora com a base formal por trás. A graduação começou em julho de 2026 e termina em julho de 2028.</p>
+      </div>
+
+      <div class="edu-top">
+        <dl class="facts">
+          <div><dt>Curso</dt><dd>Tecnólogo em Data Science</dd></div>
+          <div><dt>Instituição</dt><dd>FIAP<small>São Paulo, SP</small></dd></div>
+          <div><dt>Início</dt><dd>Julho de 2026</dd></div>
+          <div><dt>Conclusão prevista</dt><dd>Julho de 2028<small>2 anos de curso</small></dd></div>
+          <div><dt>Status</dt><dd>Em andamento</dd></div>
+        </dl>
+        <div class="prog" aria-label="Progresso do curso">
+          <div class="big"><span>mês</span> <b id="edu-month" style="font-weight:inherit">4</b><span> de 24</span></div>
+          <div class="prog-track"><div class="prog-fill" id="edu-fill"></div></div>
+          <div class="prog-ends"><span>Jul 2026</span><span>Jul 2028</span></div>
+          <p>A barra anda sozinha conforme o calendário. Quando você abrir a página de novo, ela já estará um pouco mais à frente.</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="areas-h">O que o curso cobre ao longo dos 2 anos</h3>
+        <div class="areas">
+          <div class="area"><h3>Programação e Python</h3><p>Lógica de programação, Python e as bibliotecas de análise de dados.</p></div>
+          <div class="area"><h3>Estatística e matemática</h3><p>Probabilidade, inferência e modelagem, a base para tirar conclusões confiáveis dos dados.</p></div>
+          <div class="area"><h3>Bancos de dados e Big Data</h3><p>Modelagem, SQL e como armazenar e processar grandes volumes de dados.</p></div>
+          <div class="area"><h3>Machine Learning e IA</h3><p>Modelos preditivos, aprendizado supervisionado e não supervisionado e inteligência artificial aplicada.</p></div>
+          <div class="area"><h3>Visualização e storytelling</h3><p>Transformar análise em uma história visual para quem precisa decidir.</p></div>
+          <div class="area"><h3>Projetos aplicados</h3><p>Problemas reais de negócio, do dado bruto até o resultado entregue.</p></div>
+        </div>
+      </div>
+
+      <p class="edu-note">Python, SQL e Power BI já são a minha rotina. A graduação soma estatística, machine learning e IA por cima.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-exp">
+    <div class="sec-head">
+      <p class="eyebrow">/* tabela: experiencia, 2016 a 2026 */</p>
+      <h2 id="h-exp">Minha carreira em formato de Gantt</h2>
+      <p>Cada barra é um emprego, na escala real do tempo. Clica em uma linha para abrir o que eu fiz lá.</p>
+    </div>
+
+    <div class="gantt">
+      <div class="axis" aria-hidden="true">
+        <span>Onde / quando</span>
+        <div class="ticks">
+          <span style="--y:0">2016</span><span style="--y:2">2018</span><span style="--y:4">2020</span><span style="--y:6">2022</span><span style="--y:8">2024</span><span style="--y:10">2026</span>
+        </div>
+        <i></i>
+      </div>
+
+      <details class="job" open>
+        <summary>
+          <div class="who"><b>Nova Engevix</b><span class="role">Assistente de Planejamento / Analista de Dados</span><time>Set 2022 a 02 Jul 2026 · 3 anos 10 meses · Barueri, SP</time></div>
+          <div class="track"><span class="bar now" style="--s:80;--e:126.1">3a 10m</span></div>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <p class="plain">Peguei o cronograma de uma obra bilionária do Metrô e o transformei em painéis que qualquer líder entende de relance.</p>
+          <ul>
+            <li>Responsável pela análise e visualização de dados do planejamento da Linha 20 do Metrô de SP.</li>
+            <li>Dashboards em Power BI para acompanhar o cronograma físico-financeiro, com alerta de desvios em tempo real.</li>
+            <li>Automação de relatórios gerenciais com Python (Pandas + OpenPyXL), reduzindo em até 70% o tempo de processamento manual.</li>
+            <li>Scripts SQL para extrair, tratar e cruzar dados de várias fontes (ERP, planilhas, APIs internas).</li>
+            <li>Insights e apresentações executivas para líderes de projeto, clientes e parceiros estratégicos.</li>
+            <li>Definição de cronogramas, alocação de recursos e acompanhamento de metas e KPIs de produção.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="job">
+        <summary>
+          <div class="who"><b>Luminae Energia</b><span class="role">Analista Administrativo</span><time>Mar a Jun 2022 · 4 meses · Osasco, SP</time></div>
+          <div class="track"><span class="bar" style="--s:74;--e:78"></span></div>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <p class="plain">Uma passagem curta, de olho em prazos, recursos e relatórios de desempenho.</p>
+          <ul>
+            <li>Análise de dados operacionais e administrativos, com relatórios de desempenho.</li>
+            <li>Suporte ao planejamento de projetos de energia, com foco em controle de prazos e recursos.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="job">
+        <summary>
+          <div class="who"><b>Monteferro América Latina</b><span class="role">Estagiário de Administração</span><time>Ago 2021 a Abr 2022 · 9 meses · São Paulo, SP</time></div>
+          <div class="track"><span class="bar" style="--s:67;--e:76">9m</span></div>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <p class="plain">Planilhas de controle e indicadores para o time acompanhar o dia a dia.</p>
+          <ul>
+            <li>Apoio às rotinas administrativas e coleta de dados para análises dos departamentos.</li>
+            <li>Planilhas de controle e acompanhamento de indicadores operacionais.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="job">
+        <summary>
+          <div class="who"><b>Luminae Energia</b><span class="role">Assistente PMO</span><time>Abr 2018 a Jan 2021 · 2 anos 10 meses · Osasco, SP</time></div>
+          <div class="track"><span class="bar" style="--s:27;--e:60">2a 10m</span></div>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <p class="plain">Cuidava do que ia ser produzido hoje e dos números que a diretoria queria ver amanhã.</p>
+          <ul>
+            <li>Programação diária da produção e análise de desenvolvimento de produtos (PCP).</li>
+            <li>Análise de projetos em planta baixa e projetos luminotécnicos, apoiando as equipes de engenharia.</li>
+            <li>Input e controle de pedidos no TOTVS para faturamento, com checagem diária de insumos.</li>
+            <li>Relatórios de desempenho e KPIs para gestores e diretores.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="job">
+        <summary>
+          <div class="who"><b>Nova Dinâmica Outsourcing</b><span class="role">Auxiliar Administrativo</span><time>Jun 2016 a Mai 2017 · 1 ano · Barueri, SP</time></div>
+          <div class="track"><span class="bar" style="--s:5;--e:17">1 ano</span></div>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <p class="plain">Onde os números fecharam na ponta do lápis: conciliação, notas e contas.</p>
+          <ul>
+            <li>Conciliação bancária, lançamento de notas fiscais (XML e sistema), contas a pagar e a receber.</li>
+            <li>Relatórios patrimoniais e planilhas de resultados para supervisão e diretoria.</li>
+            <li>Conferência da rotina financeira e envio do consolidado para os líderes da organização.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="job">
+        <summary>
+          <div class="who"><b>FIAP</b><span class="role">Tecnólogo em Data Science (em andamento)</span><time>Jul 2026 a Jul 2028 · São Paulo, SP</time></div>
+          <div class="track"><span class="bar study" style="--s:126"></span></div>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="body">
+          <p class="plain">Experiência de campo agora ganha base formal. A barra tracejada ainda está sendo escrita.</p>
+          <ul>
+            <li>Tecnólogo em Data Science, de julho de 2026 a julho de 2028 (conclusão prevista), na FIAP em São Paulo.</li>
+            <li><a href="#formacao">Ver o que o curso cobre</a>.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+    <p class="hint">-- a escala vai de jan/2016 a dez/2026. Cada traço vertical é um ano.</p>
+  </section>
+
+  <section aria-labelledby="h-skills">
+    <div class="sec-head">
+      <p class="eyebrow">/* tabela: competencias */</p>
+      <h2 id="h-skills">Caixa de ferramentas</h2>
+    </div>
+    <div class="stack">
+      <div class="grp"><h3>Linguagens</h3><div class="chips"><span class="big">Python</span><span>Pandas</span><span>NumPy</span><span>Matplotlib</span><span>Seaborn</span><span>OpenPyXL</span><span>Requests</span><span class="big">SQL</span></div></div>
+      <div class="grp"><h3>BI &amp; visualização</h3><div class="chips"><span class="big">Power BI</span><span>DAX</span><span>Power Query</span><span>M</span><span class="big">Excel avançado</span><span>Tabelas dinâmicas</span><span>VBA</span></div></div>
+      <div class="grp"><h3>Banco de dados</h3><div class="chips"><span class="big">SQL Server</span><span>Consultas complexas</span><span>Modelagem de dados</span></div></div>
+      <div class="grp"><h3>ERP &amp; sistemas</h3><div class="chips"><span>TOTVS</span><span>MS Project</span><span>Primavera P6 (básico)</span></div></div>
+      <div class="grp"><h3>Metodologias</h3><div class="chips"><span>Análise de KPIs</span><span>Controle de cronogramas</span><span>PCP</span><span>Planejamento estratégico</span></div></div>
+      <div class="grp"><h3>Soft skills</h3><div class="chips"><span>Comunicação técnica</span><span>Liderança de projetos</span><span>Adaptabilidade</span><span>Foco em resultados</span></div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-perks">
+    <div class="sec-head">
+      <p class="eyebrow">/* tabela: diferenciais */</p>
+      <h2 id="h-perks">O que eu levo a mais</h2>
+    </div>
+    <div class="perks">
+      <div class="perk"><h3>Pipelines que rodam sozinhos</h3><p>Automação de pipelines de dados para projetos de infraestrutura urbana de grande escala.</p></div>
+      <div class="perk"><h3>Muita gente na mesa</h3><p>Experiência com dados de projetos que envolvem vários stakeholders: construtoras, governo e fornecedores.</p></div>
+      <div class="perk"><h3>Análise vira história</h3><p>Capacidade de traduzir análises técnicas complexas em narrativas visuais para quem não é da área técnica.</p></div>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="h-cta">
+    <p class="eyebrow" style="color:var(--code-com);margin:0">-- fim da consulta. 0 erros, 1 contato.</p>
+    <h2 id="h-cta">Bora conversar?</h2>
+    <p>Se tem dado bagunçado, relatório que ninguém entende ou cronograma que precisa de um painel, me chama.</p>
+    <span class="mail">souzasaleswes@gmail.com</span>
+    <div class="contacts">
+      <button class="copy" type="button" data-copy="souzasaleswes@gmail.com">Copiar e-mail</button>
+      <a class="chip-link" href="https://linkedin.com/in/datawes" target="_blank" rel="noopener">linkedin.com/in/datawes ↗</a>
+      <span class="chip-link" style="cursor:default">São Paulo, SP, Brasil</span>
+    </div>
+  </section>
+
+  <p class="foot">Wesley Sales · Analista de Dados &amp; Business Intelligence · Python · SQL · Power BI · Excel</p>
+</div>
+
+<script>
+(function () {
+  // Progresso da formação (jul/2026 a jul/2028)
+  try {
+    var start = Date.UTC(2026, 6, 1), end = Date.UTC(2028, 7, 1), now = Date.now();
+    var p = Math.max(0, Math.min(1, (now - start) / (end - start)));
+    var month = Math.max(1, Math.min(24, Math.floor(p * 24) + 1));
+    document.getElementById('edu-fill').style.setProperty('--p', (p * 100).toFixed(1) + '%');
+    document.getElementById('edu-month').textContent = month;
+  } catch (e) {}
+
+  // Copiar e-mail
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    var original = btn.textContent;
+    btn.addEventListener('click', function () {
+      var text = btn.getAttribute('data-copy');
+      function done(msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = original; }, 1800); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        done(ok ? 'Copiado!' : 'Selecione e copie');
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done('Copiado!'); }, fallback);
+      } else { fallback(); }
+    });
+  });
+
+  // Reexecutar a query com efeito de digitação
+  var pre = document.getElementById('q');
+  var result = document.getElementById('result');
+  var run = document.getElementById('run');
+  var finalHTML = pre.innerHTML;
+  var plain = pre.textContent;
+  var timer = null;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  run.addEventListener('click', function () {
+    if (timer) clearInterval(timer);
+    result.classList.add('is-hidden');
+    if (reduce) {
+      setTimeout(function () { result.classList.remove('is-hidden'); }, 150);
+      return;
+    }
+    var text = plain;
+    var i = 0;
+    pre.textContent = '';
+    timer = setInterval(function () {
+      i += 2;
+      pre.textContent = text.slice(0, i);
+      if (i >= text.length) {
+        clearInterval(timer); timer = null;
+        pre.innerHTML = finalHTML;
+        setTimeout(function () { result.classList.remove('is-hidden'); }, 250);
+      }
+    }, 22);
+  });
+})();
+</script>
+
+</body></html>
